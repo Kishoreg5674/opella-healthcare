@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opella Healthcare - Appointment Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: "🏥";
+            font-size: 36px;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .main-content {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        input[type="text"]:invalid,
+        input[type="number"]:invalid,
+        input[type="email"]:invalid,
+        input[type="date"]:invalid,
+        input[type="time"]:invalid {
+            border-color: #ff6b6b;
+        }
+
+        .required {
+            color: #ff6b6b;
+            margin-left: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #28a745;
+        }
+
+        .appointments-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .appointment-card {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .appointment-details {
+            flex: 1;
+        }
+
+        .appointment-header {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .appointment-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .appointment-info span {
+            display: block;
+        }
+
+        .appointment-info strong {
+            color: #333;
+        }
+
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #ff5252;
+        }
+
+        .no-appointments {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        footer {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .appointment-info {
+                grid-template-columns: 1fr;
+            }
+
+            .appointment-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-delete {
+                margin-top: 10px;
+                width: 100%;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Opella Healthcare</div>
+            <p class="tagline">Professional Appointment Management System</p>
+        </header>
+
+        <div class="main-content">
+            <div class="success-message" id="successMessage">
+                ✓ Appointment booked successfully!
+            </div>
+
+            <h2 class="section-title">📋 Book Your Appointment</h2>
+
+            <form id="appointmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="patientName" 
+                            name="patientName" 
+                            placeholder="Enter full name" 
+                            required
+                            minlength="3"
+                        >
+                        <div class="error-message" id="patientNameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientId">Patient ID <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="patientId" 
+                            name="patientId" 
+                            placeholder="e.g., OP-2024-001" 
+                            required
+                            pattern="[A-Za-z0-9\-]+"
+                        >
+                        <div class="error-message" id="patientIdError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="age">Age <span class="required">*</span></label>
+                        <input 
+                            type="number" 
+                            id="age" 
+                            name="age" 
+                            placeholder="Enter age" 
+                            required
+                            min="1"
+                            max="150"
+                        >
+                        <div class="error-message" id="ageError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department <span class="required">*</span></label>
+                        <select id="department" name="department" required>
+                            <option value="">-- Select Department --</option>
+                            <option value="Cardiology">Cardiology (Heart & Vascular)</option>
+                            <option value="Neurology">Neurology (Brain & Nervous System)</option>
+                            <option value="Orthopedics">Orthopedics (Bones & Joints)</option>
+                            <option value="Pediatrics">Pediatrics (Children's Health)</option>
+                            <option value="Dermatology">Dermatology (Skin Health)</option>
+                            <option value="General Medicine">General Medicine</option>
+                            <option value="Dentistry">Dentistry</option>
+                            <option value="Ophthalmology">Ophthalmology (Eye Care)</option>
+                            <option value="ENT">ENT (Ear, Nose & Throat)</option>
+                            <option value="Gynecology">Gynecology & Obstetrics</option>
+                            <option value="Psychiatry">Psychiatry (Mental Health)</option>
+                            <option value="Oncology">Oncology (Cancer Care)</option>
+                        </select>
+                        <div class="error-message" id="departmentError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="doctorName">Doctor Name <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="doctorName" 
+                            name="doctorName" 
+                            placeholder="Enter doctor's name" 
+                            required
+                            minlength="3"
+                        >
+                        <div class="error-message" id="doctorNameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bookingDate">Appointment Date <span class="required">*</span></label>
+                        <input 
+                            type="date" 
+                            id="bookingDate" 
+                            name="bookingDate" 
+                            required
+                        >
+                        <div class="error-message" id="bookingDateError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookingTime">Appointment Time <span class="required">*</span></label>
+                        <input 
+                            type="time" 
+                            id="bookingTime" 
+                            name="bookingTime" 
+                            required
+                        >
+                        <div class="error-message" id="bookingTimeError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea 
+                            id="notes" 
+                            name="notes" 
+                            placeholder="Any additional information or concerns..."
+                            rows="1"
+                            style="resize: vertical;"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">🎯 Book Appointment</button>
+                    <button type="reset" class="btn-reset">Clear Form</button>
+                </div>
+            </form>
+
+            <!-- Appointments List -->
+            <div class="appointments-section">
+                <h2 class="section-title">📅 Your Appointments</h2>
+                <div id="appointmentsList" class="no-appointments">
+                    No appointments booked yet. Book your first appointment above!
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Opella Healthcare. All rights reserved. | Professional Healthcare Solutions</p>
+            <p>For emergencies, please call our hotline: <strong>+1-800-OPELLA-1</strong></p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize appointments from localStorage
+        let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+
+        // Get minimum date (today)
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('bookingDate').min = today;
+
+        // Form submission
+        document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get form data
+            const formData = {
+                id: Date.now(),
+                patientName: document.getElementById('patientName').value,
+                patientId: document.getElementById('patientId').value,
+                age: document.getElementById('age').value,
+                department: document.getElementById('department').value,
+                doctorName: document.getElementById('doctorName').value,
+                bookingDate: document.getElementById('bookingDate').value,
+                bookingTime: document.getElementById('bookingTime').value,
+                notes: document.getElementById('notes').value,
+                bookedAt: new Date().toLocaleString()
+            };
+
+            // Validate age
+            if (formData.age < 1 || formData.age > 150) {
+                showError('ageError', 'Please enter a valid age between 1 and 150');
+                return;
+            }
+
+            // Check for overlapping appointments for same doctor
+            const hasConflict = appointments.some(apt => 
+                apt.doctorName === formData.doctorName && 
+                apt.bookingDate === formData.bookingDate && 
+                apt.bookingTime === formData.bookingTime
+            );
+
+            if (hasConflict) {
+                showError('bookingTimeError', 'This time slot is already booked with this doctor');
+                return;
+            }
+
+            // Add to appointments array
+            appointments.unshift(formData);
+
+            // Save to localStorage
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+
+            // Show success message
+            showSuccessMessage();
+
+            // Reset form
+            this.reset();
+
+            // Update appointments display
+            displayAppointments();
+
+            // Clear success message after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+        });
+
+        // Display appointments
+        function displayAppointments() {
+            const appointmentsList = document.getElementById('appointmentsList');
+
+            if (appointments.length === 0) {
+                appointmentsList.innerHTML = '<div class="no-appointments">No appointments booked yet. Book your first appointment above!</div>';
+                return;
+            }
+
+            appointmentsList.innerHTML = appointments.map(apt => `
+                <div class="appointment-card">
+                    <div class="appointment-details">
+                        <div class="appointment-header">
+                            ${apt.patientName}
+                            <span class="status-badge">Confirmed</span>
+                        </div>
+                        <div class="appointment-info">
+                            <span><strong>ID:</strong> ${apt.patientId}</span>
+                            <span><strong>Age:</strong> ${apt.age} years</span>
+                            <span><strong>Department:</strong> ${apt.department}</span>
+                            <span><strong>Doctor:</strong> Dr. ${apt.doctorName}</span>
+                            <span><strong>Date:</strong> ${formatDate(apt.bookingDate)}</span>
+                            <span><strong>Time:</strong> ${apt.bookingTime}</span>
+                            ${apt.notes ? `<span><strong>Notes:</strong> ${apt.notes}</span>` : ''}
+                            <span><strong>Booked:</strong> ${apt.bookedAt}</span>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteAppointment(${apt.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Delete appointment
+        function deleteAppointment(id) {
+            if (confirm('Are you sure you want to cancel this appointment?')) {
+                appointments = appointments.filter(apt => apt.id !== id);
+                localStorage.setItem('appointments', JSON.stringify(appointments));
+                displayAppointments();
+            }
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccessMessage() {
+            const successEl = document.getElementById('successMessage');
+            successEl.style.display = 'block';
+        }
+
+        // Real-time validation
+        document.getElementById('patientName').addEventListener('blur', function() {
+            if (this.value.length < 3) {
+                showError('patientNameError', 'Patient name must be at least 3 characters');
+            }
+        });
+
+        document.getElementById('age').addEventListener('blur', function() {
+            if (this.value < 1 || this.value > 150 || !this.value) {
+                showError('ageError', 'Please enter a valid age');
+            }
+        });
+
+        document.getElementById('doctorName').addEventListener('blur', function() {
+            if (this.value.length < 3) {
+                showError('doctorNameError', 'Doctor name must be at least 3 characters');
+            }
+        });
+
+        // Display initial appointments
+        displayAppointments();
+    </script>
+</body>
+</html>
